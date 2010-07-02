@@ -4,7 +4,7 @@ import abstractServer
 from net.grinder.plugin.http import HTTPRequest
 
 ## Your Infinispan WAR server host
-host = "http://172.17.1.50:8080"
+host = "http://127.0.0.1:8080"
 path = "/infinispan/rest/___defaultcache/%s"
 
 class TestRunner(abstractServer.TestRunner):

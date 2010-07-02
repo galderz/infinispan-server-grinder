@@ -20,7 +20,7 @@ class ConnectionFactoryBiggerTimeout(DefaultConnectionFactory):
 class TestRunner(abstractServer.TestRunner):
 
    def doInit(self):
-      self.client = MemcachedClient(ConnectionFactoryBiggerTimeout(), Arrays.asList([InetSocketAddress("172.17.1.50", 11211)]))
+      self.client = MemcachedClient(ConnectionFactoryBiggerTimeout(), Arrays.asList([InetSocketAddress("127.0.0.1", 11211)]))
 
    def doPut(self, key, value):
       f = self.client.set(key, 0, value)
