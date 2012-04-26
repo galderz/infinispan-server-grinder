@@ -8,18 +8,19 @@ from java.lang import String
 from java.util.concurrent import TimeUnit, Future
 from java.util import ArrayList
 from java.lang import System, Integer
+from time import sleep
 
-log = grinder.logger.output
+log = grinder.logger.info
 
 random = Random()
 
 # Warm up parameters
-warmUpOpCount = 1000
+warmUpOpCount = 100
 warmUpSizeValue = 1
 
 # Test parameters
-opCount = Integer.parseInt(System.getProperty("grinder.numOpsPerThread", "10000"))
-writePercentage = 20
+opCount = Integer.parseInt(System.getProperty("grinder.numOpsPerThread", "400"))
+writePercentage = 34
 numberOfKeys = 100
 pooledKeys = ArrayList()
 sizeOfValue = 1000
@@ -82,6 +83,7 @@ class TestRunner:
             value = self.createValue(sizeOfValue)
             putTest = test3.wrap(self.timedPut)
             putTest(key, value)
+      sleep(0.1)
       log("End put/get stressor test")
 
    def makeSureCallIsNotSkipped(self, result):

@@ -8,7 +8,7 @@ from java.util.concurrent import TimeUnit, Future
 from net.grinder.script.Grinder import grinder
 from java.util import Arrays
 
-log = grinder.logger.output
+log = grinder.logger.info
 
 class ConnectionFactoryBiggerTimeout(DefaultConnectionFactory):
    
