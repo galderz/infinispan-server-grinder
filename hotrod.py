@@ -5,7 +5,7 @@ from org.infinispan.client.hotrod import RemoteCacheManager
 from java.util import Properties
 
 p = Properties()
-p.put("hotrod-servers", "127.0.0.1:11311")
+p.put("infinispan.client.hotrod.server_list", "127.0.0.2:11222;127.0.0.3:11222")
 p.put("maxActive", -1)
 p.put("maxIdle", -1)
 
@@ -18,6 +18,9 @@ class TestRunner(abstractServer.TestRunner):
 
    def doPut(self, key, value):
       self.remoteCache.put(key, value)
+
+   def doRemove(self, key):
+     self.remoteCache.remove(key)
 
    def doGet(self, key):
       return self.remoteCache.get(key)

@@ -17,6 +17,9 @@ class TestRunner(abstractServer.TestRunner):
    def doPut(self, key, value):
       self.client.set(key, value)
 
+   def doRemove(self, key):
+     self.client.delete(key)
+
    def doGet(self, key):
       return self.client.get(key)
 

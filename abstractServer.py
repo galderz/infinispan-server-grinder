@@ -19,20 +19,22 @@ warmUpOpCount = 100
 warmUpSizeValue = 1
 
 # Test parameters
-opCount = Integer.parseInt(System.getProperty("grinder.numOpsPerThread", "400"))
-writePercentage = 34
+opCount = Integer.parseInt(System.getProperty("grinder.numOpsPerThread", "10000"))
+writePercentage = 50
 numberOfKeys = 100
-pooledKeys = ArrayList()
-sizeOfValue = 1000
+sizeOfValue = 100
 
 test1 = Test(1, "Warmup (%i ops)" % warmUpOpCount)
 test2 = Test(2, "Read (%i ops per thread)" % opCount)
 test3 = Test(3, "Put (%i ops per thread)" % opCount)
+test4 = Test(4, "Remove (%i ops per thread)" % opCount)
 
 class TestRunner:
 
    def __init__(self):
       self.doInit()
+      # Pooled keys per thread
+      self.pooledKeys = ArrayList()
       log("Warm up operation count is %i" % warmUpOpCount)
       log("Test operation count is %i" % opCount)
 
@@ -62,29 +64,37 @@ class TestRunner:
       log("Initialise test keys")
       for i in range(0, numberOfKeys):
          key = "%i-%i" % (i, grinder.getThreadNumber())
-         pooledKeys.add(key)
+         self.pooledKeys.add(key)
          value = self.createValue(sizeOfValue)
          self.doPut(key, value)
       log("Initialisation finished")
 
    def putGetStressor(self):
       readPercentage = 100 - writePercentage
-      log("Start put/get stressor test")
+      log("Start put/get/remove stressor test")
       for i in range(0, opCount):
+         sleep(1) # sleep 1 second
          # Log progress ??
          randomAction = random.nextInt(100)
          randomKeyInt = random.nextInt(numberOfKeys - 1)
-         key = pooledKeys.get(randomKeyInt)
+         key = self.pooledKeys.get(randomKeyInt)
          if randomAction < readPercentage:
+            # Use random key for reading...
             readTest = test2.wrap(self.timedRead)
             result = readTest(key)
             self.makeSureCallIsNotSkipped(result)
          else:
-            value = self.createValue(sizeOfValue)
-            putTest = test3.wrap(self.timedPut)
-            putTest(key, value)
-      sleep(0.1)
-      log("End put/get stressor test")
+            if randomAction % 2 == 0:
+              value = self.createValue(sizeOfValue)
+              putTest = test3.wrap(self.timedPut)
+              putTest(key, value)
+            else:
+              removeTest = test3.wrap(self.timedRemove)
+              removeTest(key)
+
+#         sleep(0.1)
+
+      log("End put/get/remove stressor test")
 
    def makeSureCallIsNotSkipped(self, result):
       if result != None and result[0] > System.currentTimeMillis():
@@ -94,12 +104,18 @@ class TestRunner:
       return self.doGet(key)
 
    def timedPut(self, key, value):
-      self.doPut(key, value)   
+      self.doPut(key, value)
+
+   def timedRemove(self, key):
+      self.doRemove(key)
 
    def doInit(self):
       raise NotImplementedError, "doInit implementation undefined"
 
    def doPut(self, key, value):
+      raise NotImplementedError, "doPut implementation undefined"
+
+   def doRemove(self, key):
       raise NotImplementedError, "doPut implementation undefined"
 
    def doGet(self, key):

@@ -28,6 +28,12 @@ class TestRunner(abstractServer.TestRunner):
       if status != 1:
          raise RuntimeException("Set operation did not complete successfully, instead returned %i" % status)
 
+   def doRemove(self, key):
+     f = self.client.delete(key)
+     status = f.get(120, TimeUnit.SECONDS)
+     if status != 1:
+       raise RuntimeException("Set operation did not complete successfully, instead returned %i" % status)
+
    def doGet(self, key):
       return self.client.get(key)
 
